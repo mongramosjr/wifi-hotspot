@@ -30,6 +30,8 @@ CoovaChilli needs two network interfaces, we choose eth0 and wlan0.
 
 ## hostapd
 
+### Install and deploy hostapd
+
 Hostapd allows your computer to function as an Access Point (AP) WPA/WPA2 Authenticator. Since debian-based systems have pre-packaged version of hostapd, a simple command will install this package
 
 ```console
@@ -68,6 +70,8 @@ If all goes well, the hostapd daemon should start and not quit.
 sudo service hostapd restart
 ```
 
+### Starting hostapd at boot time
+
 Enable the service to start automatically at boot:
 
 ```console
@@ -84,6 +88,8 @@ sudo systemctl status hostapd
 ```
 ## MySQL
 
+### Install and deploy MySQL server
+
 Preparing to package installation. MySQL password is set at “raspbian”. Of course you can put whatever you want.
 
 ```console
@@ -96,6 +102,8 @@ Install MySQL server.
 ```console
 sudo apt-get install -y debhelper libssl-dev libcurl4-gnutls-dev mysql-server gcc make pkg-config iptables 
 ```
+
+### Starting MySQL at boot time
 
 Start MySQL server if it is not running.
 
@@ -113,12 +121,13 @@ sudo systemctl enable mysql
 
 FreeRadius server is also available in Ubuntu’s and debian's repo, so we can simply install it using apt-get. 
 
+### Install and deploy freeradius server
+
 Install required packages.
 
 ```console
 sudo apt-get install -y freeradius freeradius-mysql 
 ```
-
 
 Create radius database.
 
@@ -164,14 +173,16 @@ Next link sql to modules available.
 sudo ln -s /etc/freeradius/3.0/mods-available/sql /etc/freeradius/3.0/mods-enabled/sql
 ```
 
+### Testing the FreeRADIUS server 
+
 Now test your configuration by stopping and restarting the FreeRadius in debug mode.
 
 ```console
-service freeradius stop
-freeradius -X
+sudo service freeradius stop
+sudo freeradius -X
 ```
 
-Make a connection test. For this, create a test user usertest with his password passwd
+Make a connection test. For this, open another terminal and create a test user usertest with his password passwd
 
 ```console
 echo "insert into radcheck (username, attribute, op, value) values ('usertest', 'Cleartext-Password', ':=', 'passwd');" | mysql -u root -praspbian radius
@@ -182,6 +193,29 @@ And now to test you use the command
 ```console
 radtest usertest passwd localhost 0 testing123
 ```
+
+radtest should return:
+
+```console
+Sent Access-Request Id 158 from 0.0.0.0:49930 to 127.0.0.1:1812 length 78
+⋅⋅⋅User-Name = "usertest"
+⋅⋅⋅User-Password = "passwd"
+⋅⋅⋅NAS-IP-Address = 127.0.1.1
+⋅⋅⋅NAS-Port = 0
+⋅⋅⋅Message-Authenticator = 0x00
+⋅⋅⋅Cleartext-Password = "passwd"
+Received Access-Accept Id 158 from 127.0.0.1:1812 to 0.0.0.0:0 length 20
+```
+
+### Starting freeradius at boot time
+
+Enable freeradius so it starts up at boot time.
+
+```console
+sudo systemctl enable freeradius
+sudo systemctl start freeradius
+```
+
 
 ## CoovaChilli
 
@@ -229,6 +263,12 @@ To start chilli, run the following command
 
 ```console
 sudo /etc/init.d/chilli start
+```
+
+Enable coova-chilli so it starts up at boot time.
+
+```console
+sudo systemctl enable freeradius
 ```
 
 ## Nginx
