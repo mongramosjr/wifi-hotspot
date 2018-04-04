@@ -4,9 +4,9 @@ deploying a wifi hotspot with captive portal using coovachilli in raspbian and u
 
 ## Requirements
 
-In order to build a captive portal solution, we will need the follwoing:
+In order to build a captive portal solution, we will need the following:
 
-* **Raspian/Ubuntu**  – A Linux distribution. In this article, we will be using Raspbian release 2017-11-29 or Ubuntu 16.04. Later versions should work fine.
+* **Raspbian/Ubuntu**  – A Linux distribution. In this article, we will be using Raspbian release 2017-11-29 or Ubuntu 16.04. Later versions should work fine.
 
 * **Raspberry Pi** – a low cost, credit-card sized computer 
 
@@ -14,7 +14,7 @@ In order to build a captive portal solution, we will need the follwoing:
 
 * **hostapd** – a software access point capable of turning normal network interface cards into access points and authentication servers.
 
-* **Freeradius** – a radius server for provisioning and accounting.
+* **FreeRADIUS** – a radius server for provisioning and accounting.
 
 * **MySQL** – a database server backing the radius server.
 
@@ -118,11 +118,11 @@ Make sure service start even at boot:
 sudo systemctl enable mysql
 ```
 
-## Freeradius
+## FreeRADIUS
 
 FreeRadius server is also available in Ubuntu’s and debian's repo, so we can simply install it using apt-get. 
 
-### Install and deploy freeradius server
+### Install and deploy FreeRADIUS server
 
 Install required packages.
 
@@ -150,7 +150,7 @@ mysql -u root -p raspbian radius
 GRANT ALL PRIVILEGES ON radius.* to [freeradius_db_user]@[host_address] IDENTIFIED by '[freeradius_db_password]';
 ```
 
-### Configure freeradius
+### Configure FreeRADIUS
 
 Edit client definition.
 
@@ -239,7 +239,7 @@ Sent Access-Request Id 158 from 0.0.0.0:49930 to 127.0.0.1:1812 length 78
 Received Access-Accept Id 158 from 127.0.0.1:1812 to 0.0.0.0:0 length 20
 ```
 
-### Starting freeradius at boot time
+### Starting FreeRADIUS at boot time
 
 Enable freeradius so it starts up at boot time.
 
@@ -507,7 +507,7 @@ sudo systemctl restart nginx
 ```
 
 
-### Modify configuration in chilli and in the captive portal login page
+### Modify configuration in CoovaChilli and in the captive portal login page
 
 
 Edit /etc/chilli/config.
@@ -536,7 +536,7 @@ $uamsecret = "uamtesting123"; # Change this to match the coovachilli config dire
 
 ### Restart the captive portal
 
-Let’s now start the hostapd, nginx and coovachilli. And try accessing EasyHotspot from our web browser.
+Let’s now start the hostapd, nginx and CoovaChilli. And try accessing captive portal from our web browser.
 
 ```console
 sudo systemctl stop hostapd
