@@ -373,7 +373,7 @@ Create the server block file that will tell Nginx on how to process the hotspot 
 sudo vim /etc/nginx/sites-available/hotspot.example.com
 ```
 
-Copy the following lines and paste it into the config file
+Copy the following lines and paste it into the server block file
 
 ```console
 server {
@@ -510,4 +510,38 @@ password: passwd
 
 That should be it. You should now be able to browse the internet on your laptop or smartphone.
 
-##  Bonus: 
+##  Bonus: Dnsmasq
+
+Dnsmasq is a small, open-source application that’s designed to provide DNS and, optionally, Dynamic Host Configuration Protocol (DHCP), addressing to a small network. It also supports IPv4 and IPv6 static and dynamic DHCP.
+
+Use debian or ubuntu default package installation routines.
+
+```console
+sudo apt-get install dnsmasq
+```
+
+That’s it. Dnsmasq should now be running.
+
+Add configuration for resolving domain name for **hotspot.example.com** to an ip address **10.10.10.1** and define nameservers
+
+```console
+sudo vi /etc/dnsmasq.conf
+```
+
+Add the following line:
+
+```console
+no-resolv
+server=208.67.222.222
+server=208.67.220.220
+server=8.8.8.8
+server=8.8.4.4
+
+address=/hotspot.example.com/10.10.10.1
+```
+
+Restart the dnsmasq service to apply the changes
+
+```console
+sudo service restart dnsmasq
+```
