@@ -159,11 +159,13 @@ sudo vim /etc/freeradius/3.0/clients.conf
 
 The shared secret use to "encrypt" and "sign" packets between the NAS and FreeRADIUS. This secret must be changed from the default, otherwise it is not a secret anymore!
 
+```bash
 client localhost { 
 	... 
 	secret = radtesting123 # Change this to your shared secret
 	...
 }
+```
 
 Configure the SQL radius module.
 
@@ -198,7 +200,7 @@ sudo vim /etc/freeradius/3.0/sites-available/default
 
 Change the following:
 
-```console
+```bash
 '-sql' to sql
 ```
 
@@ -310,7 +312,7 @@ sudo vim /etc/chilli/config
 
 Change the following parameters to match your environment.
 
-```console
+```bash
 ###
 #   Local Network Configurations
 HS_WANIF=eth0            # WAN Interface toward the Internet
@@ -424,7 +426,7 @@ sudo vim /etc/nginx/sites-available/hotspot.example.com
 
 Copy the following lines and paste it into the server block file
 
-```console
+```bash
 server {
 	# Redirect all HTTP traffic to HTTPS since daloRADIUS requires an HTTPS connection
 	listen 10.10.10.1:80 default_server; # Change this to match your HotSpot IP address
@@ -513,7 +515,7 @@ Edit /etc/chilli/config.
 sudo vi /etc/chilli/config
 ```
 
-```console
+```bash
 #   Use HS_UAMFORMAT to define the actual captive portal url.
 HS_UAMFORMAT=https://\$HS_UAMLISTEN/hotspotlogin.php
 ```
@@ -525,7 +527,7 @@ Edit /var/www/hotspot.example.com/hotspotlogin.php
 sudo vi /var/www/hotspot.example.com/hotspotlogin.php
 ```
 
-```console
+```bash
 # Shared secret used to encrypt challenge with. Prevents dictionary attacks.
 # You should change this to your own shared secret.
 $uamsecret = "uamtesting123"; # Change this to match the coovachilli config directive HS_UAMSECRET
@@ -552,7 +554,7 @@ Using a wireless client like smartphone or laptop, click the Wi-Fi icon in your 
 
 If your followed the above steps, then you will be redirected to the captive portal page. Use the access credential of test user created earlier.
 
-```console
+```bash
 username: usertest
 password: passwd
 ```
@@ -579,7 +581,7 @@ sudo vi /etc/dnsmasq.conf
 
 Add the following line:
 
-```console
+```bash
 no-resolv
 server=208.67.222.222
 server=208.67.220.220
