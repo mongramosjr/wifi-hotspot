@@ -6,6 +6,7 @@ deploying a wifi hotspot with captive portal using coovachilli in raspbian and u
 
 In order to build a captive portal solution, we will need the follwoing:
 
+* **Raspian/Ubuntu**  – A Linux distribution. In this article, we will be using Raspbian release 2017-11-29 or Ubuntu 16.04. Later versions should work fine.
 
 * **Raspberry Pi** – a low cost, credit-card sized computer 
 
@@ -90,7 +91,7 @@ sudo systemctl status hostapd
 
 ### Install and deploy MySQL server
 
-Preparing to package installation. MySQL password is set at “raspbian”. Of course you can put whatever you want.
+Preparing to package installation. MySQL password is set at “**raspbian**”. Of course you can put whatever you want.
 
 ```console
 sudo apt-get install -y debconf-utils
@@ -596,3 +597,19 @@ Restart the dnsmasq service to apply the changes
 ```console
 sudo service restart dnsmasq
 ```
+
+### Restart the captive portal
+Start the apps in the folowing sequence:
+```console
+sudo systemctl stop dnsmasq
+sudo systemctl stop hostapd
+sudo systemctl stop nginx
+sudo systemctl stop chilli
+
+sudo systemctl start chilli
+sudo systemctl start nginx
+sudo systemctl start hostapd
+sudo systemctl start dnsmasq
+```
+
+You may  now reboot the system and make sure CoovaChilli started up fine.
