@@ -250,7 +250,7 @@ sudo systemctl start freeradius
 
 ### Install first the dependencies
 
-To make sure coova-chilli will run without any problems, we will install the dependencies first. To do so, run the following commands:
+To make sure CoovaChilli will run without any problems, we will install the dependencies first. To do so, run the following commands:
 
 ```console
 sudo apt-get update
@@ -260,7 +260,7 @@ sudo apt-get update
 sudo apt-get install -y -f debhelper devscripts libcurl4-gnutls-dev haserl g++ gengetopt bash-completion libtool libltdl-dev libjson-c-dev libssl-dev make cmake autoconf automake build-essential dpkg-dev
 ```
 
-### Download and install the coova-chilli
+### Download and install the CoovaChilli
 
 Clone the project to your directory
 
@@ -286,20 +286,29 @@ After building debian package is done, install the generated .deb file:
 sudo dpkg -i coova-chilli_<latest_version_here>_<architecture_here>.deb
 ```
 
-### Starting coova-chilli
+### Starting CoovaChilli
 
-To start chilli, run the following command
+To start CoovaChilli, run the following command
 
 ```console
 sudo /etc/init.d/chilli start
 ```
 
-Enable coova-chilli so it starts up at boot time.
+Enable CoovaChilli so it starts up at boot time.
 
 ```console
 sudo systemctl enable chilli
 ```
 
+### Configure CoovaChilli
+All configuration files are located under /etc/chilli. You will need to create a config file with your sites modifications.
+
+```console
+sudo cp -v /etc/chilli/defaults /etc/chilli/config
+sudo vim /etc/chilli/config
+```
+
+Change the following parameters to match your environment.
 
 ```console
 ###
@@ -314,11 +323,32 @@ HS_UAMUIPORT=4990          # HotSpot UAM "UI" Port (on subscriber network, for e
 
 ... 
 
+# OpenDNS Servers
+HS_DNS1=10.10.10.1         # Set this to be the HotSpot IP Address if dnsmasq or BIND is running locally, otherwise use other DNS server
+HS_DNS2=208.67.220.220
+
+...
+
 ###
 #   HotSpot settings for simple Captive Portal
+HS_NASID=nas01			# NAS ID
+HS_RADIUS=localhost		# FreeRadius server
+HS_RADIUS2=localhost		# FreeRadius server
+
 HS_UAMALLOW=10.10.10.0/24
-HS_RADSECRET=radtesting123    # Set to be your RADIUS shared secret
-HS_UAMSECRET=uamtesting123     # Set to be your UAM secret
+
+HS_RADSECRET=radtesting123    	# Set to be your RADIUS shared secret
+HS_UAMSECRET=uamtesting123    	# Set to be your UAM secret
+
+...
+
+###
+#   Firewall issues
+#   
+#   Uncomment the following to add ports to the allowed local ports list
+#   The up.sh script will allow these local ports to be used, while the default
+#   is to block all unwanted traffic to the tun/tap. 
+HS_TCP_PORTS="80 443"
 
 ...
 
@@ -326,6 +356,15 @@ HS_UAMSECRET=uamtesting123     # Set to be your UAM secret
 #   Standard configurations
 HS_ADMUSR=coovachillispot
 HS_ADMPWD=coovachillispot
+```
+
+### Test it out
+
+Restart CoovaChilli for the latest changes to be effected.
+
+```console
+sudo /etc/init.d/chilli stop
+sudo /etc/init.d/chilli start
 ```
 
 ## Nginx
@@ -357,12 +396,22 @@ wget -c https://github.com/lirantal/daloradius/archive/master.zip -O daloradius.
 unzip daloradius.master.zip
 ```
 
-Create webroot folder for the hotspot domain name, copy the hotspotlogin web app and move daloradius in that webroot folder
+Create webroot folder for the hotspot domain name, copy the captive portal login page and move daloradius in that webroot folder
 
 ```console
 sudo mkdir /var/www/hotspot.example.com
 cp -r daloradius-master/contrib/chilli/portal2/hotspotlogin/* /var/www/hotspot.example.com/
 sudo mv daloradius-master /var/www/hotspot.example.com/daloradius
+```
+
+Modify the MySQL database for FreeRadius
+```console
+mysql -u root -praspbian radius < /var/www/hotspot.example.com/daloradius/contrib/db/fr2-mysql-daloradius-and-freeradius.sql
+```
+
+Re-insert our test user.
+```console
+echo "insert into radcheck (username, attribute, op, value) values ('usertest', 'Cleartext-Password', ':=', 'passwd');" | mysql -u root -praspbian radius
 ```
 
 ### Create a server block in nginx
@@ -455,7 +504,7 @@ sudo systemctl restart nginx
 ```
 
 
-### Modify configuration in chilli and in hotspotlogin.php
+### Modify configuration in chilli and in the captive portal login page
 
 
 Edit /etc/chilli/config.
