@@ -360,6 +360,13 @@ HS_TCP_PORTS="80 443"
 HS_ADMUSR=coovachillispot
 HS_ADMPWD=coovachillispot
 ```
+Edit the file /etc/chilli/up.sh with execution permission:
+
+```bash
+#Enable NAT
+iptables -I POSTROUTING -t nat -o $HS_WANIF -j MASQUERADE
+#Others iptables rules when chilli come up
+```
 
 ### Test it out
 
@@ -595,20 +602,20 @@ address=/hotspot.example.com/10.10.10.1
 Restart the dnsmasq service to apply the changes
 
 ```console
-sudo service restart dnsmasq
+sudo service dnsmasq restart
 ```
 
 ### Restart the captive portal
 Start the apps in the folowing sequence:
 ```console
 sudo systemctl stop dnsmasq
-sudo systemctl stop hostapd
 sudo systemctl stop nginx
 sudo systemctl stop chilli
+sudo systemctl stop hostapd
 
+sudo systemctl start hostapd
 sudo systemctl start chilli
 sudo systemctl start nginx
-sudo systemctl start hostapd
 sudo systemctl start dnsmasq
 ```
 
